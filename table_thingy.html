@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <script src="ie-emulation-modes-warning.js"></script>
+
+    <link href="table_thingy_css.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+
+    <div class="container" id="container">
+        <h1>Entering a matrix</h1>
+
+
+        <div class="form-group">
+            <label>Option 1: Paste from Excel</label>
+            <div class="row">
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="pasteFromExcel" placeholder="Paste matrix here">
+                </div>
+                <div class="col-sm-6">
+                    <button class="btn btn-default" role="button" id="create" onclick="Javascript:addTableFromExcelPaste()">Go</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="matrixEditor">
+            <div class="form-group">
+                <label>Option 2: Create new matrix</label>
+                <div class="row">
+                    <div class="col-sm-6">
+
+                        <input type="text" class="form-control" id="matSize" placeholder="Enter matrix dimensions">
+                    </div>
+                    <div class="col-sm-6">
+                        <button class="btn btn-default" role="button" id="create" onclick="Javascript:addTable()">Go</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        
+        <button class="btn btn-default" role="button" id="concatonate" onclick="Javascript:concatonateTable2()">Save</button>
+        <input type="text" class="form-control" id="matrixAsString">
+
+    </div>
+
+
+    <script type="text/javascript" src="bootstrap.min.js"></script>
+    <script type="text/javascript" src="mindmup-editabletable.js"></script>
+
+    <script>
+        function addTable() {
+            if ($('#matA').length > 0) {
+                matrixEditor.removeChild(matA);
+            }
+
+            var myTableDiv = document.getElementById("matrixEditor");
+
+            var table = document.createElement('TABLE');
+            table.className = 'table-responsive';
+            table.id = 'matA';
+
+
+            var tableBody = document.createElement('TBODY');
+            table.appendChild(tableBody);
+
+            for (var i = 0; i < $('#matSize').val(); i++) {
+                var tr = document.createElement('TR');
+                tableBody.appendChild(tr);
+
+                for (var j = 0; j < $('#matSize').val(); j++) {
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(0));
+                    tr.appendChild(td);
+                }
+            }
+            myTableDiv.appendChild(table);
+            $('#matA').editableTableWidget();
+            document.getElementById('matSize').value = ""
+
+        }
+    </script>
+    
+    <script>
+        function addTableFromExcelPaste() {
+            if ($('#matA').length > 0) {
+                matrixEditor.removeChild(matA);
+            }
+            
+            var matrix_pasted = document.getElementById('pasteFromExcel').value
+            matrix_pasted = matrix_pasted.replace(/\t/g, " ");
+            
+            matrix_pasted_array = matrix_pasted.split(" ");
+            index = 0;
+            matSize = Math.sqrt(matrix_pasted_array.length)
+            
+           
+            var myTableDiv = document.getElementById("matrixEditor");
+
+            var table = document.createElement('TABLE');
+            table.className = 'table-responsive';
+            table.id = 'matA';
+
+
+            var tableBody = document.createElement('TBODY');
+            table.appendChild(tableBody);
+
+            for (var i = 0; i < matSize; i++) {
+                var tr = document.createElement('TR');
+                tableBody.appendChild(tr);
+
+                for (var j = 0; j < matSize; j++) {
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(matrix_pasted_array[index]));
+                    tr.appendChild(td);
+                    index = index + 1;
+                }
+            }
+            myTableDiv.appendChild(table);
+            $('#matA').editableTableWidget();
+            document.getElementById('pasteFromExcel').value = ""
+
+        }
+    </script>
+
+    <script>
+        function concatonateTable2() {
+            var myTableArray = [];
+
+            $("table#matA tr").each(function () {
+                var arrayOfThisRow = [];
+                var tableData = $(this).find('td');
+                if (tableData.length > 0) {
+                    tableData.each(function () {
+                        arrayOfThisRow.push($(this).text());
+                    });
+                    myTableArray.push(arrayOfThisRow);
+                }
+            });
+
+            myTableArray = "[".concat(myTableArray);
+            myTableArray = myTableArray.replace(/,/g, " ");
+            myTableArray = myTableArray.concat("]");
+            document.getElementById('matrixAsString').value = myTableArray;
+
+        }
+    </script>
+
+</body>
+
+</html>
