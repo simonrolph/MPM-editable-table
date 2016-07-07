@@ -18,106 +18,246 @@
     <link href="table_thingy_css.css" rel="stylesheet">
 
 
+
+
+
 </head>
 
 <body>
 
 
+
+
     <div class="container" id="container">
-        <h1>Entering a matrix</h1>
+        <h1>Matrix Entry</h1>
+        <h3>Entering a matrix</h3>
 
 
         <div class="form-group">
             <label>Option 1: Paste from Excel</label>
             <div class="row">
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" id="pasteFromExcel" placeholder="Paste matrix here">
+                    <input type="text" class="form-control" id="pasteFromExcel" placeholder="Paste matrix here" data-toggle="tooltip" data-placement="left" title="Copy and paste a table of numbers directly from excel spreadsheet or a text file.">
                 </div>
                 <div class="col-sm-6">
-                    <button class="btn btn-default" role="button" id="create" onclick="Javascript:addTableFromExcelPaste()">Go</button>
+                    <button class="btn btn-success" type="submit" id="addTableFromExcel" onclick="Javascript:addTableFromExcelPaste()">Go</button>
                 </div>
             </div>
         </div>
-        
+
+
+        <div class="form-group">
+            <label>Option 2: Create new matrix</label>
+            <div class="row">
+                <div class="col-sm-6">
+
+                    <input type="text" class="form-control" id="matSize" placeholder="Enter matrix dimensions" data-toggle="tooltip" data-placement="left" title="Enter matrix dimensions to enter matrix manually.">
+                </div>
+                <div class="col-sm-6">
+                    <button onKeyPress="return checkSubmit(addTable())" class="btn btn-success" role="button" id="addTable" onclick="Javascript:addTable()">Go</button>
+                </div>
+
+            </div>
+        </div>
         <div id="matrixEditor">
-            <div class="form-group">
-                <label>Option 2: Create new matrix</label>
-                <div class="row">
-                    <div class="col-sm-6">
+        </div>
 
-                        <input type="text" class="form-control" id="matSize" placeholder="Enter matrix dimensions">
-                    </div>
-                    <div class="col-sm-6">
-                        <button class="btn btn-default" role="button" id="create" onclick="Javascript:addTable()">Go</button>
-                    </div>
+        <hr>
+        <h3>Outputs (hidden stuff that gets input into the database)</h3>
 
-                </div>
-            </div>
+        <div class="form-group">
+            <label>Matrix values pasted as a string</label>
+            <input class="form-control" id="matrixAsString">
+        </div>
 
+        <div class="form-group">
+            <label>Matrix dimension</label>
+            <input class="form-control" id="matrixDim">
+        </div>
+
+        <div class="form-group">
+            <label>Matrix classes (author)</label>
+            <input class="form-control" id="matrixClassAuthor">
+        </div>
+
+        <div class="form-group">
+            <label>Matrix classes (organised)</label>
+            <input class="form-control" id="matrixClassOrganised">
         </div>
         
-        <button class="btn btn-default" role="button" id="concatonate" onclick="Javascript:concatonateTable2()">Save</button>
-        <input type="text" class="form-control" id="matrixAsString">
+        <div class="form-group">
+            <label>All of the above</label>
+            <textarea class="form-control" id="matrixAll"></textarea>
+        </div>
+
 
     </div>
+
+
+
+
+
+
+
+
 
 
     <script type="text/javascript" src="bootstrap.min.js"></script>
     <script type="text/javascript" src="mindmup-editabletable.js"></script>
 
     <script>
+        // CREATING EMPTY TABLE FROM MATRIX DIMENSION
         function addTable() {
-            if ($('#matA').length > 0) {
-                matrixEditor.removeChild(matA);
+            if ($('#classAuthor').length > 0) {
+                document.getElementById("matrixEditor").innerHTML = "";
             }
 
             var myTableDiv = document.getElementById("matrixEditor");
 
-            var table = document.createElement('TABLE');
-            table.className = 'table-responsive';
-            table.id = 'matA';
+            var label = document.createElement('LABEL');
+            label.appendChild(document.createTextNode("Matrix:"));
+            myTableDiv.appendChild(label);
 
+            // MAKE TABLE FOR MATRIX
+            var table = document.createElement('TABLE');
+            table.className = 'table table-bordered';
+            table.id = 'matA';
+            $(table).attr('data-toggle', 'tooltip');
+            $(table).attr('data-placement', 'left');
+            table.title = "Enter the matrix values into this grid, decimal point must be . not ,";
+            matSize = $('#matSize').val()
 
             var tableBody = document.createElement('TBODY');
             table.appendChild(tableBody);
 
-            for (var i = 0; i < $('#matSize').val(); i++) {
+            for (var i = 0; i < matSize; i++) {
                 var tr = document.createElement('TR');
                 tableBody.appendChild(tr);
 
-                for (var j = 0; j < $('#matSize').val(); j++) {
+                for (var j = 0; j < matSize; j++) {
                     var td = document.createElement('TD');
                     td.appendChild(document.createTextNode(0));
                     tr.appendChild(td);
                 }
             }
             myTableDiv.appendChild(table);
+
+
+            // FUNCTION THIS BIT TO AVOID DUPLICATION
+            // LIFE STAGES AUTHOR
+            var label = document.createElement('LABEL');
+            label.appendChild(document.createTextNode("Life stages as described by the author:"));
+            myTableDiv.appendChild(label);
+            var index = 1;
+            var table = document.createElement('TABLE');
+            table.className = 'table table-bordered';
+            table.id = 'classAuthor';
+
+            // set tool tips for author
+            $(table).attr('data-toggle', 'tooltip');
+            $(table).attr('data-placement', 'left');
+            table.title = "Enter the descriptions of each life stage/class as defined in the original literature";
+
+            var tableBody = document.createElement('TBODY');
+            table.appendChild(tableBody);
+
+            // create table
+            for (var i = 0; i < matSize; i++) {
+                var tr = document.createElement('TR');
+                tableBody.appendChild(tr)
+                var td = document.createElement('TD');
+                tr.appendChild(td)
+                td.appendChild(document.createTextNode("Life stage " + index));
+                index = index + 1;
+            }
+
+            myTableDiv.appendChild(table); //append table to div
+
+            // LIFE STAGES ORGANISED
+            var label = document.createElement('LABEL');
+            label.appendChild(document.createTextNode("Life stages organised:"));
+            myTableDiv.appendChild(label);
+
+            var index = 1;
+            var table = document.createElement('TABLE');
+            table.className = 'table table-bordered';
+            table.id = 'classOrganised';
+
+            // set tool tips for author
+            $(table).attr('data-toggle', 'tooltip');
+            $(table).attr('data-placement', 'left');
+            table.title = "Enter the standardised description of each life stage in the matrix model. Possible values: active, prop, dorm";
+
+            var tableBody = document.createElement('TBODY');
+            table.appendChild(tableBody);
+
+            // create table
+            for (var i = 0; i < matSize; i++) {
+                var tr = document.createElement('TR');
+                tableBody.appendChild(tr)
+                var td = document.createElement('TD');
+                tr.appendChild(td)
+                td.appendChild(document.createTextNode("Active"));
+                index = index + 1;
+            }
+
+
+            myTableDiv.appendChild(table); //append table to div
+
+            // make tables editable
             $('#matA').editableTableWidget();
-            document.getElementById('matSize').value = ""
+            $('#classAuthor').editableTableWidget();
+            $('#classOrganised').editableTableWidget();
+
+            // activate tool tips
+            $(document).ready(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+
+            $('#matrixEditor')
+                .append('<button class="btn-block btn-success" role="button" id="concatonate" onclick="Javascript:concatonateTable()" data-toggle="tooltip" data-placement="left" title="Save matrix to database">Save</button>');
+
+
+
+            // END OF DUPLICATE CODE
+
+            // specific stuff to this function
+            document.getElementById('matrixDim').value = $('#matSize').val();
+            document.getElementById('matSize').value = ""; // empty box
+
+
+
 
         }
     </script>
-    
+
     <script>
         function addTableFromExcelPaste() {
-            if ($('#matA').length > 0) {
-                matrixEditor.removeChild(matA);
+            // REMOVE DATA TABLES IF THEY ALREADY EXIST
+            if ($('#classAuthor').length > 0) {
+                document.getElementById("matrixEditor").innerHTML = "";
             }
-            
+
             var matrix_pasted = document.getElementById('pasteFromExcel').value
             matrix_pasted = matrix_pasted.replace(/\t/g, " ");
-            
+
             matrix_pasted_array = matrix_pasted.split(" ");
-            index = 0;
+            var index = 0;
             matSize = Math.sqrt(matrix_pasted_array.length)
-            
-           
+
+            // CREATE TABLE FOR ENTERING MATRIX VALUES
             var myTableDiv = document.getElementById("matrixEditor");
 
             var table = document.createElement('TABLE');
-            table.className = 'table-responsive';
+            table.className = 'table table-bordered';
             table.id = 'matA';
+            $(table).attr('data-toggle', 'tooltip');
+            $(table).attr('data-placement', 'left');
+            table.title = "Enter the matrix values into this grid, decimal point must be . not ,";
 
+            var label = document.createElement('LABEL');
+            label.appendChild(document.createTextNode("Matrix:"));
+            myTableDiv.appendChild(label);
 
             var tableBody = document.createElement('TBODY');
             table.appendChild(tableBody);
@@ -134,16 +274,97 @@
                 }
             }
             myTableDiv.appendChild(table);
+
+
+            // FUNCTION THIS BIT TO AVOID DUPLICATION
+
+            // LIFE STAGES AUTHOR
+            var label = document.createElement('LABEL');
+            label.appendChild(document.createTextNode("Life stages as described by the author:"));
+            myTableDiv.appendChild(label);
+            var index = 1;
+            var table = document.createElement('TABLE');
+            table.className = 'table table-bordered';
+            table.id = 'classAuthor';
+
+            // set tool tips for author
+            $(table).attr('data-toggle', 'tooltip');
+            $(table).attr('data-placement', 'left');
+            table.title = "Enter the descriptions of each life stage/class as defined in the original literature";
+
+            var tableBody = document.createElement('TBODY');
+            table.appendChild(tableBody);
+
+            // create table
+            for (var i = 0; i < matSize; i++) {
+                var tr = document.createElement('TR');
+                tableBody.appendChild(tr)
+                var td = document.createElement('TD');
+                tr.appendChild(td)
+                td.appendChild(document.createTextNode("Life stage " + index));
+                index = index + 1;
+            }
+
+            myTableDiv.appendChild(table); //append table to div
+
+            // LIFE STAGES ORGANISED
+            var label = document.createElement('LABEL');
+            label.appendChild(document.createTextNode("Life stages organised:"));
+            myTableDiv.appendChild(label);
+
+            var index = 1;
+            var table = document.createElement('TABLE');
+            table.className = 'table table-bordered';
+            table.id = 'classOrganised';
+
+            // set tool tips for author
+            $(table).attr('data-toggle', 'tooltip');
+            $(table).attr('data-placement', 'left');
+            table.title = "Enter the standardised description of each life stage in the matrix model. Possible values: active, prop, dorm";
+
+            var tableBody = document.createElement('TBODY');
+            table.appendChild(tableBody);
+
+            // create table
+            for (var i = 0; i < matSize; i++) {
+                var tr = document.createElement('TR');
+                tableBody.appendChild(tr)
+                var td = document.createElement('TD');
+                tr.appendChild(td)
+                td.appendChild(document.createTextNode("Active"));
+                index = index + 1;
+            }
+
+            myTableDiv.appendChild(table); //append table to div
+
+            // make tables editable
             $('#matA').editableTableWidget();
-            document.getElementById('pasteFromExcel').value = ""
+            $('#classAuthor').editableTableWidget();
+            $('#classOrganised').editableTableWidget();
+
+            // activate tool tips
+            $(document).ready(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+
+            $('#matrixEditor')
+                .append('<button class="btn-block btn-success" role="button" id="concatonate" onclick="Javascript:concatonateTable()" data-toggle="tooltip" data-placement="left" title="Save matrix to database">Save</button>');
+
+            // END OF DUPLICATE CODE
+
+            // function specific stuff    
+            document.getElementById('pasteFromExcel').value = "";
+            document.getElementById('matrixDim').value = matSize;
 
         }
     </script>
 
     <script>
-        function concatonateTable2() {
+        // SAVING ALL THE DATA FROM THE TABLES INTO STRINGS FOR SAVING INTO THE DATABASE
+        function concatonateTable() {
             var myTableArray = [];
 
+            // matrix
             $("table#matA tr").each(function () {
                 var arrayOfThisRow = [];
                 var tableData = $(this).find('td');
@@ -160,7 +381,73 @@
             myTableArray = myTableArray.concat("]");
             document.getElementById('matrixAsString').value = myTableArray;
 
+            // class author
+            var myTableArray = [];
+            $("table#classAuthor tr").each(function () {
+                var arrayOfThisRow = [];
+                var tableData = $(this).find('td');
+                if (tableData.length > 0) {
+                    tableData.each(function () {
+                        arrayOfThisRow.push($(this).text());
+                    });
+                    myTableArray.push(arrayOfThisRow);
+                }
+            });
+            document.getElementById('matrixClassAuthor').value = myTableArray;
+
+            // class organised
+            var myTableArray = [];
+            $("table#classOrganised tr").each(function () {
+                var arrayOfThisRow = [];
+                var tableData = $(this).find('td');
+                if (tableData.length > 0) {
+                    tableData.each(function () {
+                        arrayOfThisRow.push($(this).text());
+                    });
+                    myTableArray.push(arrayOfThisRow);
+                }
+            });
+            document.getElementById('matrixClassOrganised').value = myTableArray;
+
+            // all in 1
+
+            var allTogetherNow = "[";
+            var allTogetherNow = allTogetherNow.concat(document.getElementById('matrixAsString').value);
+            var allTogetherNow = allTogetherNow.concat(';');
+            var allTogetherNow = allTogetherNow.concat(document.getElementById('matrixClassAuthor').value);
+            var allTogetherNow = allTogetherNow.concat(';');
+            var allTogetherNow = allTogetherNow.concat(document.getElementById('matrixClassOrganised').value);
+            var allTogetherNow = allTogetherNow.concat(';');
+            var allTogetherNow = allTogetherNow.concat(matSize);
+            var allTogetherNow = allTogetherNow.concat(']');
+            document.getElementById('matrixAll').value = allTogetherNow;
+
         }
+    </script>
+
+    <script>
+        // MAKING IT SO THAT YOU CAN JUST PRESS ENTER WITH PASTE FROM EXCEL
+        $("#pasteFromExcel").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#addTableFromExcel").click();
+            }
+        });
+    </script>
+
+    <script>
+        // MAKING IT SO THAT YOU CAN JUST PRESS ENTER WITH ADD NEW TABLE
+        $("#matSize").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#addTable").click();
+            }
+        });
+    </script>
+
+    <script>
+        // MAKE THEM SWEET SWEET TOOL TIPS
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
     </script>
 
 </body>

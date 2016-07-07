@@ -1,14 +1,21 @@
 .container {
   width: auto;
-  max-width: 680px;
+  max-width: 900px;
   padding: 0 15px;
 }
 
-.table-responsive {
-    table-layout: fixed;
-    width:100%;
-    border: 1px solid black;
+#matA {
     text-align: center;
 }
 
+.tooltip-inner {
+    text-align: left;
+    background-color:#5cb85c;
+    max-width: 150px;
+    /* If max-width does not work, try using width instead */
+    width: 150px; 
+}
 
+.tooltip.left .tooltip-arrow {
+          border-left-color: #5cb85c;
+       }   
